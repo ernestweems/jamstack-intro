@@ -13,17 +13,21 @@ const INITIAL_STATE = {
     switch (action.type) {
       case 'updateFieldValue':
         return { ...state, [action.field]: action.value };
+      case 'updateStatus':
+          return {...state,status: action.status}
+
+        case 'reset':
         default:
           return INITIAL_STATE;
-  
-    
     }
   };
-  
+
   const Form = () => {
     const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
     
     const setStatus = status => dispatch({ type: 'updateStatus', status });
+
+
   //function currying here
     const updateFieldValue = field => event => {
       dispatch({
@@ -36,10 +40,31 @@ const INITIAL_STATE = {
 const handleSubmit = event => {
         event.preventDefault();
         // send tha message :)
-        console.log(state)        
+       // console.log(state)
+       setStatus('PENDING')
+       // Send message
+       setTimeout(() => setStatus('SUCCESS'), 1000);
+
+    };
+    if(state.status === 'SUCCESS'){
+      return  (
+        <p className={styles.success}>  Message sent.
+         <button
+        type="reset"
+        onClick={ () => dispatch({type:'reset'})}
+        className={`${styles.button} ${styles.centered}`}
+        >Reset</button>
+        </p>
+       
+      )
+
     }
     return (
-        <form className={styles.form} onSubmit = {handleSubmit}>
+      <>
+      {state.status === 'ERORR' && (
+        <p className={styles.error}> Something went wrong. Please try again </p>
+      )}
+        <form className={`${styles.form}  ${state.status === 'PENDING' && styles.pending}`} onSubmit = {handleSubmit}>
             <label className={styles.label}>
               Name
               <input className={styles.input}
@@ -76,6 +101,7 @@ const handleSubmit = event => {
                 Send
             </button>
         </form>
+        </>
     )
 }
 export default Form;
