@@ -43,10 +43,25 @@ const handleSubmit = event => {
        // console.log(state)
        setStatus('PENDING')
        // Send message
-       setTimeout(() => setStatus('SUCCESS'), 1000);
+      // MOCK  servive behavoir
+      // setTimeout(() => setStatus('SUCCESS'), 1000);
+      fetch('/api/contact', {
+        method: 'POST',
+        body: JSON.stringify(state)
+      })
+        .then(response => response.json())
+        .then(response => {
+          console.log(response);
+          setStatus('SUCCESS');
+        })
+        .catch(error => {
+          console.error(error);
+          setStatus('ERROR');
+        });
 
-    };
-    if(state.status === 'SUCCESS'){
+    };    
+
+      if(state.status === 'SUCCESS'){
       return  (
         <p className={styles.success}>  Message sent.
          <button
@@ -55,13 +70,11 @@ const handleSubmit = event => {
         className={`${styles.button} ${styles.centered}`}
         >Reset</button>
         </p>
-       
       )
-
     }
     return (
       <>
-      {state.status === 'ERORR' && (
+      {state.status === 'ERROR' && (
         <p className={styles.error}> Something went wrong. Please try again </p>
       )}
         <form className={`${styles.form}  ${state.status === 'PENDING' && styles.pending}`} onSubmit = {handleSubmit}>
